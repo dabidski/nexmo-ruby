@@ -119,9 +119,30 @@ module Nexmo
     end
 
     def post(path, params)
-      body = URI.encode_www_form(params.merge(:api_key => @key, :api_secret => @secret))
+      body = encode_www_form(params.merge(:api_key => @key, :api_secret => @secret))
 
       parse @http.post(path, body, {'Content-Type' => 'application/x-www-form-urlencoded'})
+    end
+
+    # same as URI.encode_www_form 
+    def encode_www_form(enum)
+      enum.map do |k,v|
+        if v.nil?
+          URI.escape(k.to_s)
+        elsif v.respond_to?(:to_ary)
+          v.to_ary.map do |w|
+            str = URI.escape(k.to_s)
+            unless w.nil?
+              str << '='
+              str << URI.escape(w)
+            end
+          end.join('&')
+        else
+          str = URI.escape(k.to_s)
+          str << '='
+          str << URI.escape(v)
+        end
+      end.join('&')
     end
 
     def parse(http_response)
