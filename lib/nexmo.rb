@@ -9,7 +9,7 @@ module Nexmo
       @messages = messages
     end
 
-    attr_reader :code
+    attr_reader :code, :messages
   end
 
   class AuthenticationError < Error; end
